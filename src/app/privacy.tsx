@@ -9,19 +9,20 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLOURS, SIZES } from "../styles/theme";
 
-// Reusing your global components to keep the brand consistent!
 import FooterSection from "../components/FooterSection";
+import NavBar from "../components/NavBar";
 
 export default function PrivacyPolicy() {
   const router = useRouter();
 
-  const handleNavClick = (section: string) => {
+  const handleNavClick = (section: any) => {
     router.push("/");
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/*<NavBar onNavClick={handleNavClick} /> */}
+      {/* Restored the NavBar and passed the empty activeSection string here! */}
+      <NavBar activeSection="" onNavClick={handleNavClick} />
 
       <ScrollView
         style={styles.container}
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
   },
   contentWrapper: {
     width: "100%",
-    maxWidth: 1000, // Slightly narrower than the homepage so the text doesn't stretch too far
+    maxWidth: 1000,
     paddingVertical: SIZES.xxLarge,
     paddingHorizontal: SIZES.large,
   },

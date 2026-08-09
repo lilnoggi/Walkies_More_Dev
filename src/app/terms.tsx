@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router"; // This handles our navigation!
+import { useRouter } from "expo-router";
 import {
   ScrollView,
   StyleSheet,
@@ -13,16 +13,17 @@ import FooterSection from "../components/FooterSection";
 import NavBar from "../components/NavBar";
 
 export default function TermsOfService() {
-  const router = useRouter(); // Initialize the router
+  const router = useRouter();
 
-  const handleNavClick = (section: string) => {
-    // If they click a NavBar link while on this page, we send them back to home first!
+  // Using 'any' here satisfies TypeScript since we don't need the exact section names on this page
+  const handleNavClick = (section: any) => {
     router.push("/");
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <NavBar onNavClick={handleNavClick} />
+      {/* Passed the empty activeSection string here! */}
+      <NavBar activeSection="" onNavClick={handleNavClick} />
 
       <ScrollView
         style={styles.container}
@@ -30,7 +31,6 @@ export default function TermsOfService() {
       >
         <View style={styles.contentWrapper}>
           <View style={styles.textContainer}>
-            {/* The Back Button */}
             <TouchableOpacity
               style={styles.backButton}
               onPress={() => router.push("/")}
