@@ -18,7 +18,7 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "output": "single",
+      "output": "static",
       "favicon": "./src/assets/WalkiesAndMore_Logo.png",
       "name": "Walkies & More | Premium Dog Services",
       "shortName": "Walkies & More"
