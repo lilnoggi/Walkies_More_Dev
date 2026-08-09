@@ -4,22 +4,22 @@
     "slug": "Walkies_More_Dev",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": ".../assets/WalkiesAndMore_Logo.png",
+    "icon": "./src/assets/WalkiesAndMore_Logo.png",
     "scheme": "walkiesmoredev",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": ".../assets/WalkiesAndMore_Logo.png"
+      "icon": "./src/assets/WalkiesAndMore_Logo.png"
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#ffffff",
-        "foregroundImage": ".../assets/WalkiesAndMore_Logo.png"
+        "foregroundImage": "./src/assets/WalkiesAndMore_Logo.png"
       },
       "predictiveBackGestureEnabled": false
     },
     "web": {
       "output": "single",
-      "favicon": ".../assets/WalkiesAndMore_Logo.png",
+      "favicon": "./src/assets/WalkiesAndMore_Logo.png",
       "name": "Walkies & More | Premium Dog Services",
       "shortName": "Walkies & More"
     },
@@ -29,7 +29,7 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#ffffff",
-          "image": ".../assets/WalkiesAndMore_Logo.png",
+          "image": "./src/assets/WalkiesAndMore_Logo.png",
           "imageWidth": 200
         }
       ],
