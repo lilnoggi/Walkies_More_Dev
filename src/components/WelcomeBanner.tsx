@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  useWindowDimensions, // Import the hook!
 } from "react-native";
 import { COLOURS, SIZES } from "../styles/theme";
 
@@ -18,12 +19,17 @@ interface WelcomeBannerProps {
 export default function WelcomeBanner({ onClaimPress }: WelcomeBannerProps) {
   const [isSalsaHovered, setIsSalsaHovered] = useState(false);
 
+  // 1. Grab the width again
+  const { width } = useWindowDimensions();
+  const isMobile = width < 850; // Used a slightly wider breakpoint here so the text has plenty of breathing room
+
   return (
-    <View style={styles.container}>
-      {/* Left Column: Text & Call to Action */}
-      <View style={styles.textColumn}>
-        {/* Swapped plain "Welcome" for a warm, inviting title */}
-        <Text style={styles.header}>Premium Pet Care, Tailored with Love</Text>
+    // 2. Conditionally apply the mobile layouts!
+    <View style={[styles.container, isMobile && styles.containerMobile]}>
+      <View style={[styles.textColumn, isMobile && styles.textColumnMobile]}>
+        <Text style={[styles.header, isMobile && styles.headerMobile]}>
+          Premium Pet Care, Tailored with Love
+        </Text>
 
         <Text style={styles.promptText}>Do you need someone to...</Text>
         <View style={styles.bulletList}>
@@ -46,15 +52,20 @@ export default function WelcomeBanner({ onClaimPress }: WelcomeBannerProps) {
           strict quality control and absolute reliability.
         </Text>
 
-        <TouchableOpacity style={styles.heroButton} onPress={onClaimPress}>
+        <TouchableOpacity
+          style={[styles.heroButton, isMobile && styles.heroButtonMobile]}
+          onPress={onClaimPress}
+        >
           <Text style={styles.heroButtonText}>Claim Your Free Trial Walk</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Right Column: Interactive Image */}
       <View style={styles.imageColumn}>
         <Pressable
-          style={styles.imageContainer}
+          style={[
+            styles.imageContainer,
+            isMobile && styles.imageContainerMobile,
+          ]}
           onHoverIn={() => setIsSalsaHovered(true)}
           onHoverOut={() => setIsSalsaHovered(false)}
           onPressIn={() => setIsSalsaHovered(true)}
@@ -66,7 +77,6 @@ export default function WelcomeBanner({ onClaimPress }: WelcomeBannerProps) {
             resizeMode="contain"
           />
 
-          {/* The Dark Overlay */}
           {isSalsaHovered && (
             <View style={styles.overlay}>
               <Text style={styles.overlayTitle}>Salsa</Text>
@@ -96,7 +106,7 @@ const styles = StyleSheet.create({
   },
   header: {
     color: COLOURS.primaryDark,
-    fontSize: 38, // Larger and much more impactful
+    fontSize: 38,
     fontFamily: "Georgia",
     fontWeight: "bold",
     marginBottom: SIZES.large,
@@ -104,7 +114,7 @@ const styles = StyleSheet.create({
   },
   promptText: {
     color: COLOURS.primaryDark,
-    fontSize: SIZES.large, // Bumping up size for readability
+    fontSize: SIZES.large,
     fontWeight: "600",
     marginBottom: SIZES.small,
   },
@@ -121,7 +131,7 @@ const styles = StyleSheet.create({
   paragraph: {
     color: COLOURS.text,
     fontSize: SIZES.medium,
-    lineHeight: 26, // Expanded line height so blocks of text are effortless to read
+    lineHeight: 26,
     marginBottom: SIZES.xLarge,
   },
   heroButton: {
@@ -177,5 +187,28 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: SIZES.large,
     marginBottom: 4,
+  },
+  /* --- NEW MOBILE STYLES --- */
+  containerMobile: {
+    flexDirection: "column",
+    paddingVertical: SIZES.xLarge,
+    paddingHorizontal: SIZES.large,
+  },
+  textColumnMobile: {
+    paddingRight: 0, // Removes the large gap on the right
+    marginBottom: SIZES.xxLarge,
+  },
+  headerMobile: {
+    fontSize: 32, // Shrinks the text slightly so it fits neatly
+    lineHeight: 40,
+    textAlign: "center",
+  },
+  heroButtonMobile: {
+    alignSelf: "stretch", // Makes the button full width on mobile for easy tapping!
+    alignItems: "center",
+  },
+  imageContainerMobile: {
+    width: 300, // Slightly smaller image for mobile
+    height: 300,
   },
 });

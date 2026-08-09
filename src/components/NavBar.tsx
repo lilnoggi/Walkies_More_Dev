@@ -1,10 +1,17 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import { COLOURS, SIZES } from "../styles/theme";
 
 const logoImage = require("../assets/WalkiesAndMore_Logo.png");
 
 interface NavBarProps {
-  activeSection: string; // Tells the navbar which section is currently active
+  activeSection: string;
   onNavClick: (
     section:
       | "welcome"
@@ -17,17 +24,22 @@ interface NavBarProps {
 }
 
 export default function NavBar({ activeSection, onNavClick }: NavBarProps) {
+  // 1. Grab the live screen width!
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768; // If the screen is smaller than an iPad portrait, it's mobile!
+
   return (
-    <View style={styles.navBar}>
-      <View style={styles.navLeft}>
+    // 2. Conditionally apply mobile styles if isMobile is true
+    <View style={[styles.navBar, isMobile && styles.navBarMobile]}>
+      <View style={[styles.navLeft, isMobile && styles.navLeftMobile]}>
         <Image source={logoImage} style={styles.logo} resizeMode="contain" />
-        <View>
+        <View style={isMobile && styles.centeredText}>
           <Text style={styles.navTitle}>Walkies & More |</Text>
           <Text style={styles.navSubtitle}>Premium Dog Services</Text>
         </View>
       </View>
 
-      <View style={styles.navLinks}>
+      <View style={[styles.navLinks, isMobile && styles.navLinksMobile]}>
         <TouchableOpacity onPress={() => onNavClick("welcome")}>
           <Text
             style={[
@@ -138,9 +150,26 @@ const styles = StyleSheet.create({
     fontSize: SIZES.medium,
     fontWeight: "500",
   },
-  /* --- NEW ACTIVE STATE STYLE --- */
   activeNavLink: {
-    color: COLOURS.accent, // Changes the text to your green accent color!
+    color: COLOURS.accent,
     fontWeight: "bold",
+  },
+  /* --- NEW MOBILE STYLES --- */
+  navBarMobile: {
+    flexDirection: "column",
+    paddingVertical: SIZES.large,
+    gap: SIZES.large,
+  },
+  navLeftMobile: {
+    flexDirection: "column",
+    gap: SIZES.small,
+  },
+  centeredText: {
+    alignItems: "center",
+  },
+  navLinksMobile: {
+    flexWrap: "wrap", // This forces links to drop to the next line instead of squishing!
+    justifyContent: "center",
+    gap: SIZES.medium,
   },
 });

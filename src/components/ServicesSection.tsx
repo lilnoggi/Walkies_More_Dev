@@ -1,15 +1,19 @@
 import { useState } from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import { COLOURS, SIZES } from "../styles/theme";
 import ServiceCard from "./ServiceCard";
 
-// Move your assets here
 const dogWalkingIcon = require("../assets/DogWalking_Icon.png");
 const dogSittingIcon = require("../assets/DogSitting_Icon.png");
 const houseIcon = require("../assets/House_Icon.png");
 const overnightIcon = require("../assets/Overnight_Icon.png");
-
-// Import Nacho!
 const nachoRunning = require("../assets/Nacho_Running_Image.png");
 
 interface ServiceSectionProps {
@@ -17,18 +21,21 @@ interface ServiceSectionProps {
 }
 
 export default function ServicesSection({ onBookPress }: ServiceSectionProps) {
-  // State to track if the image is being hovered or tapped
   const [isNachoHovered, setIsNachoHovered] = useState(false);
 
+  const { width } = useWindowDimensions();
+  const isMobile = width < 850;
+
   return (
-    <View style={styles.section}>
+    <View style={[styles.section, isMobile && styles.sectionMobile]}>
       <Text style={styles.sectionTitle}>Services</Text>
 
       <Text style={styles.sectionSubtitle}>Dog Walking</Text>
 
-      {/* Container to put the grid and the image side-by-side */}
-      <View style={styles.rowContainer}>
-        <View style={styles.grid}>
+      <View
+        style={[styles.rowContainer, isMobile && styles.rowContainerMobile]}
+      >
+        <View style={[styles.grid, isMobile && styles.gridMobile]}>
           <ServiceCard
             title="Premium Solo Walk"
             description="1-on-1 focused time for a single dog. Ideal for nervous, reactive, or senior dogs who need a slower pace."
@@ -47,12 +54,14 @@ export default function ServicesSection({ onBookPress }: ServiceSectionProps) {
           />
         </View>
 
-        {/* Nacho's Interactive Showcase Image */}
         <Pressable
-          style={styles.imageContainer}
+          style={[
+            styles.imageContainer,
+            isMobile && styles.imageContainerMobile,
+          ]}
           onHoverIn={() => setIsNachoHovered(true)}
           onHoverOut={() => setIsNachoHovered(false)}
-          onPressIn={() => setIsNachoHovered(true)} // Triggers on mobile tap
+          onPressIn={() => setIsNachoHovered(true)}
           onPressOut={() => setIsNachoHovered(false)}
         >
           <Image
@@ -61,7 +70,6 @@ export default function ServicesSection({ onBookPress }: ServiceSectionProps) {
             resizeMode="cover"
           />
 
-          {/* The Dark Overlay - Only shows when hovered/tapped */}
           {isNachoHovered && (
             <View style={styles.overlay}>
               <Text style={styles.overlayTitle}>Nacho</Text>
@@ -73,7 +81,7 @@ export default function ServicesSection({ onBookPress }: ServiceSectionProps) {
       </View>
 
       <Text style={styles.sectionSubtitle}>Dog-Sitting</Text>
-      <View style={styles.grid}>
+      <View style={[styles.grid, isMobile && styles.gridMobile]}>
         <ServiceCard
           title="Hourly Dog Sitting"
           description="Flexible, extended care in your own home. Perfect for when you need a few solid hours of coverage while you are out."
@@ -101,7 +109,7 @@ export default function ServicesSection({ onBookPress }: ServiceSectionProps) {
       </View>
 
       <Text style={styles.sectionSubtitle}>Free Trials</Text>
-      <View style={styles.grid}>
+      <View style={[styles.grid, isMobile && styles.gridMobile]}>
         <ServiceCard
           title="Dog Sitting Free Trial"
           description="Inviting someone into your home requires absolute trust. Claim a complimentary meet-and-greet drop-in."
@@ -159,20 +167,19 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 320,
   },
-  /* --- NEW STYLES FOR THE HOVER EFFECT --- */
   imageContainer: {
     width: 350,
     height: 350,
     borderRadius: 16,
-    overflow: "hidden", // Crucial: Keeps the dark overlay inside the rounded corners!
+    overflow: "hidden",
   },
   featureImage: {
     width: "100%",
     height: "100%",
   },
   overlay: {
-    ...StyleSheet.absoluteFill, // Stretches the overlay perfectly over the image
-    backgroundColor: "rgba(0, 0, 0, 0.6)", // 60% opacity black
+    ...StyleSheet.absoluteFill,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -187,5 +194,23 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: SIZES.large,
     marginBottom: 4,
+  },
+  /* --- MOBILE STYLES --- */
+  sectionMobile: {
+    paddingHorizontal: SIZES.large,
+    paddingVertical: SIZES.xLarge,
+  },
+  rowContainerMobile: {
+    flexDirection: "column",
+  },
+  gridMobile: {
+    flexDirection: "column", // <-- THIS FIXES THE OVERLAP!
+    alignItems: "center", // Keeps the cards centered nicely
+  },
+  imageContainerMobile: {
+    width: "100%",
+    maxWidth: 380,
+    alignSelf: "center",
+    marginTop: SIZES.large,
   },
 });

@@ -1,16 +1,28 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import { COLOURS, SIZES } from "../styles/theme";
 
-// Assuming you named it this to fix the web bug earlier!
 const logoImage = require("../assets/WalkiesAndMore_Logo.png");
 
 export default function AboutUsSection() {
+  const { width } = useWindowDimensions();
+  const isMobile = width < 850;
+
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>About Us</Text>
+    <View style={[styles.section, isMobile && styles.sectionMobile]}>
+      <Text
+        style={[styles.sectionTitle, isMobile && styles.sectionTitleMobile]}
+      >
+        About Us
+      </Text>
 
       {/* Card 1: The Business */}
-      <View style={styles.card}>
+      <View style={[styles.card, isMobile && styles.cardMobile]}>
         <View style={styles.textColumn}>
           <Text style={styles.header}>The Walkies & More Standard</Text>
           <Text style={styles.paragraph}>
@@ -32,7 +44,13 @@ export default function AboutUsSection() {
           </Text>
         </View>
 
-        <View style={styles.imageColumnRight}>
+        {/* This image jumps perfectly underneath the text on mobile */}
+        <View
+          style={[
+            styles.imageColumnRight,
+            isMobile && styles.imageColumnMobile,
+          ]}
+        >
           <Image
             source={logoImage}
             style={styles.businessLogo}
@@ -41,9 +59,14 @@ export default function AboutUsSection() {
         </View>
       </View>
 
-      {/* Card 2: Meet Mani (Reversed Layout for ZigZag effect) */}
-      <View style={[styles.card, styles.reverseCard]}>
-        <View style={styles.imageColumnLeft}>
+      {/* Card 2: Meet Mani */}
+      <View
+        style={[styles.card, styles.reverseCard, isMobile && styles.cardMobile]}
+      >
+        {/* On mobile, this flips to stack cleanly rather than using row-reverse */}
+        <View
+          style={[styles.imageColumnLeft, isMobile && styles.imageColumnMobile]}
+        >
           <View style={styles.imagePlaceholder}>
             <Text style={{ color: COLOURS.primary, fontWeight: "bold" }}>
               Mani's Photo
@@ -99,7 +122,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 16,
     padding: SIZES.xxLarge,
-    marginBottom: SIZES.large, // Space between the two cards
+    marginBottom: SIZES.large,
     shadowColor: COLOURS.text,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
@@ -108,7 +131,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   reverseCard: {
-    flexDirection: "row-reverse", // Flips the image to the left side
+    flexDirection: "row-reverse",
   },
   textColumn: {
     flex: 1,
@@ -129,7 +152,7 @@ const styles = StyleSheet.create({
   businessLogo: {
     width: 180,
     height: 180,
-    opacity: 0.8, // Softens the logo slightly so it isn't overpowering
+    opacity: 0.8,
   },
   imagePlaceholder: {
     width: 250,
@@ -152,5 +175,25 @@ const styles = StyleSheet.create({
     fontSize: SIZES.medium,
     lineHeight: 24,
     marginBottom: SIZES.medium,
+  },
+  /* --- NEW MOBILE STYLES --- */
+  sectionMobile: {
+    paddingHorizontal: SIZES.large,
+    paddingVertical: SIZES.xLarge,
+  },
+  sectionTitleMobile: {
+    textAlign: "center",
+  },
+  cardMobile: {
+    flexDirection: "column", // Overrides both "row" AND "row-reverse"!
+    padding: SIZES.large,
+  },
+  imageColumnMobile: {
+    width: "100%", // Resets all the desktop padding and margins
+    marginLeft: 0,
+    marginRight: 0,
+    paddingLeft: 0,
+    marginTop: SIZES.large,
+    marginBottom: SIZES.large,
   },
 });

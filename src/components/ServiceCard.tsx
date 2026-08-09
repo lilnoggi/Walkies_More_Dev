@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  useWindowDimensions, // 1. Import the hook
 } from "react-native";
 import { COLOURS, SIZES } from "../styles/theme";
 
@@ -27,8 +28,13 @@ export default function ServiceCard({
   iconSource,
   onPress,
 }: ServiceCardProps) {
+  // 2. Measure the screen
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
+
   return (
-    <View style={styles.card}>
+    // 3. Apply the mobile class to expand the card width!
+    <View style={[styles.card, isMobile && styles.cardMobile]}>
       <View style={styles.iconContainer}>
         <Image
           source={iconSource}
@@ -69,6 +75,12 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 3,
   },
+  /* --- NEW MOBILE STYLES --- */
+  cardMobile: {
+    width: "100%", // Tells the card to stretch across the phone screen!
+    maxWidth: 380, // Prevents it from getting comically large on iPads
+    marginHorizontal: 0,
+  },
   iconContainer: {
     marginBottom: SIZES.medium,
     height: 60,
@@ -79,7 +91,7 @@ const styles = StyleSheet.create({
   iconImage: {
     width: "100%",
     height: "100%",
-    tintColor: COLOURS.primaryDark, // This ensures your icons perfectly match the deep violet text
+    tintColor: COLOURS.primaryDark,
   },
   title: {
     color: COLOURS.primaryDark,

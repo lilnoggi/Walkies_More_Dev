@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    useWindowDimensions,
-    View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions, // 1. Hook imported
+  View,
 } from "react-native";
 import { COLOURS, SIZES } from "../styles/theme";
 
@@ -34,71 +34,100 @@ const TESTIMONIALS = [
 
 export default function TestimonialsSection() {
   const [activeIndex, setActiveIndex] = useState(0);
-
-  // 1. Creates a direct reference to the ScrollView to control it via script
   const scrollViewRef = useRef<ScrollView>(null);
 
-  // 2. Calculates dimensions. The card is now 900px wide on desktop!
+  // 2. Measure screen and determine mobile state
   const { width } = useWindowDimensions();
-  const cardWidth = Math.min(width - SIZES.xxLarge * 2, 900);
+  const isMobile = width < 768;
+
+  // 3. Adjust card width for mobile so it fits the screen properly
+  const paddingOffset = isMobile ? SIZES.large * 2 : SIZES.xxLarge * 2;
+  const cardWidth = Math.min(width - paddingOffset, 900);
   const cardGap = SIZES.large;
 
-  // 3. The Auto-Scroll Script
   useEffect(() => {
-    // Sets a timer to run every 5000 milliseconds (5 seconds)
     const timer = setInterval(() => {
       const nextIndex =
         activeIndex === TESTIMONIALS.length - 1 ? 0 : activeIndex + 1;
       handleScroll(nextIndex);
     }, 5000);
-
-    // Clears the timer if the user manually clicks a dot, resetting the clock
     return () => clearInterval(timer);
   }, [activeIndex]);
 
-  // 4. The Sliding Transition Script
   const handleScroll = (index: number) => {
     setActiveIndex(index);
-    // Calculates the exact pixel coordinate to slide to
     const slideDistance = index * (cardWidth + cardGap);
-
     scrollViewRef.current?.scrollTo({
       x: slideDistance,
-      animated: true, // This boolean triggers the smooth sliding animation
+      animated: true,
     });
   };
 
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Testimonials | Happy Pet Parents</Text>
+    <View style={[styles.section, isMobile && styles.sectionMobile]}>
+      <Text
+        style={[styles.sectionTitle, isMobile && styles.sectionTitleMobile]}
+      >
+        Testimonials | Happy Pet Parents
+      </Text>
 
       <View style={styles.carouselContainer}>
-        {/* We use a hidden ScrollView as the "track" for our sliding animation */}
         <ScrollView
           ref={scrollViewRef}
           horizontal
           showsHorizontalScrollIndicator={false}
-          scrollEnabled={false} // Prevents manual dragging so the script stays in full control
+          scrollEnabled={false}
           contentContainerStyle={{ gap: cardGap, paddingBottom: SIZES.large }}
-          style={{ width: cardWidth }} // Masks the scroll view so you only see one card at a time
+          style={{ width: cardWidth }}
         >
           {TESTIMONIALS.map((item) => (
-            <View key={item.id} style={[styles.card, { width: cardWidth }]}>
-              <View style={styles.imageColumn}>
-                <View style={styles.imagePlaceholder}>
+            // 4. Apply mobile card styling
+            <View
+              key={item.id}
+              style={[
+                styles.card,
+                isMobile && styles.cardMobile,
+                { width: cardWidth },
+              ]}
+            >
+              <View
+                style={[
+                  styles.imageColumn,
+                  isMobile && styles.imageColumnMobile,
+                ]}
+              >
+                <View
+                  style={[
+                    styles.imagePlaceholder,
+                    isMobile && styles.imagePlaceholderMobile,
+                  ]}
+                >
                   <Text style={styles.placeholderText}>Photo</Text>
                 </View>
               </View>
 
               <View style={styles.textColumn}>
-                <Text style={styles.clientName}>{item.name}</Text>
-                <Text style={styles.testimonialText}>"{item.text}"</Text>
+                <Text
+                  style={[
+                    styles.clientName,
+                    isMobile && styles.clientNameMobile,
+                  ]}
+                >
+                  {item.name}
+                </Text>
+                <Text
+                  style={[
+                    styles.testimonialText,
+                    isMobile && styles.testimonialTextMobile,
+                  ]}
+                >
+                  "{item.text}"
+                </Text>
               </View>
             </View>
           ))}
         </ScrollView>
 
-        {/* The Pagination Dots */}
         <View style={styles.paginationContainer}>
           {TESTIMONIALS.map((_, index) => (
             <TouchableOpacity
@@ -131,13 +160,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.xxLarge,
   },
   carouselContainer: {
-    alignItems: "center", // Centers the entire carousel and dots
+    alignItems: "center",
   },
   card: {
     flexDirection: "row",
     backgroundColor: "#fff",
     borderRadius: 16,
-    padding: SIZES.xxLarge, // Increased padding for the bigger card
+    padding: SIZES.xxLarge,
     shadowColor: COLOURS.text,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
@@ -149,8 +178,8 @@ const styles = StyleSheet.create({
     marginRight: SIZES.xLarge,
   },
   imagePlaceholder: {
-    width: 100, // Increased image size
-    height: 100, // Increased image size
+    width: 100,
+    height: 100,
     borderRadius: 50,
     backgroundColor: COLOURS.background,
     justifyContent: "center",
@@ -174,7 +203,7 @@ const styles = StyleSheet.create({
   },
   testimonialText: {
     color: COLOURS.text,
-    fontSize: SIZES.medium, // Increased text size
+    fontSize: SIZES.medium,
     lineHeight: 24,
     fontStyle: "italic",
   },
@@ -195,5 +224,35 @@ const styles = StyleSheet.create({
   },
   inactiveDot: {
     backgroundColor: "transparent",
+  },
+  /* --- NEW MOBILE STYLES --- */
+  sectionMobile: {
+    paddingVertical: SIZES.xLarge,
+  },
+  sectionTitleMobile: {
+    textAlign: "center",
+    paddingHorizontal: SIZES.large,
+  },
+  cardMobile: {
+    flexDirection: "column", // Stacks the image on top of the text
+    padding: SIZES.large, // Reduces the massive padding
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  imageColumnMobile: {
+    marginRight: 0, // Removes the desktop gap
+    marginBottom: SIZES.large,
+  },
+  imagePlaceholderMobile: {
+    width: 80, // Shrinks the image slightly for mobile
+    height: 80,
+  },
+  clientNameMobile: {
+    textAlign: "center",
+  },
+  testimonialTextMobile: {
+    textAlign: "center",
+    fontSize: SIZES.small, // Shrinks text slightly to prevent huge walls of text on a phone
+    lineHeight: 22,
   },
 });

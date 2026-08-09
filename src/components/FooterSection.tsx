@@ -1,5 +1,12 @@
-import { useRouter } from "expo-router"; // 1. Import the router
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useRouter } from "expo-router";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import { COLOURS, SIZES } from "../styles/theme";
 
 const logoImage = require("../assets/WalkiesAndMore_Logo.png");
@@ -7,36 +14,54 @@ const copyrightIcon = require("../assets/Copyright_Icon.png");
 
 export default function FooterSection() {
   const currentYear = new Date().getFullYear();
-  const router = useRouter(); // 2. Initialize the router
+  const router = useRouter();
+
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
 
   return (
     <View style={styles.footerContainer}>
-      <View style={styles.contentWrapper}>
+      <View
+        style={[styles.contentWrapper, isMobile && styles.contentWrapperMobile]}
+      >
         {/* Left Side: Branding */}
-        <View style={styles.brandColumn}>
+        <View
+          style={[styles.brandColumn, isMobile && styles.brandColumnMobile]}
+        >
           <Image source={logoImage} style={styles.logo} resizeMode="contain" />
-          <View>
+          <View style={isMobile && { alignItems: "center" }}>
             <Text style={styles.brandTitle}>Walkies & More |</Text>
             <Text style={styles.brandSubtitle}>Premium Dog Services</Text>
           </View>
         </View>
 
         {/* Center: Copyright */}
-        <View style={styles.copyrightColumn}>
+        <View
+          style={[
+            styles.copyrightColumn,
+            isMobile && styles.copyrightColumnMobile,
+          ]}
+        >
           <Image
             source={copyrightIcon}
             style={styles.copyrightIcon}
             resizeMode="contain"
           />
-          <Text style={styles.copyrightText}>
+          <Text
+            style={[
+              styles.copyrightText,
+              isMobile && styles.copyrightTextMobile,
+            ]}
+          >
             {currentYear} Walkies & More | Premium Dog Services. All rights
             reserved.
           </Text>
         </View>
 
         {/* Right Side: Legal Links */}
-        <View style={styles.linksColumn}>
-          {/* 3. Wrap the text in TouchableOpacity and set the route */}
+        <View
+          style={[styles.linksColumn, isMobile && styles.linksColumnMobile]}
+        >
           <TouchableOpacity onPress={() => router.push("/privacy")}>
             <Text style={styles.linkText}>Privacy Policy</Text>
           </TouchableOpacity>
@@ -116,5 +141,25 @@ const styles = StyleSheet.create({
     fontSize: SIZES.medium,
     fontWeight: "500",
     textDecorationLine: "underline",
+  },
+  /* --- NEW MOBILE STYLES --- */
+  contentWrapperMobile: {
+    flexDirection: "column",
+    gap: SIZES.xLarge,
+  },
+  brandColumnMobile: {
+    flexDirection: "column",
+    gap: SIZES.small,
+  },
+  copyrightColumnMobile: {
+    flexDirection: "column",
+    textAlign: "center",
+  },
+  copyrightTextMobile: {
+    textAlign: "center",
+    marginTop: 4,
+  },
+  linksColumnMobile: {
+    justifyContent: "center",
   },
 });

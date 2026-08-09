@@ -5,6 +5,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  useWindowDimensions, // 1. Hook imported
   View,
 } from "react-native";
 import { COLOURS, SIZES } from "../styles/theme";
@@ -21,7 +22,6 @@ interface ContactSectionProps {
 export default function ContactSection({
   selectedService,
 }: ContactSectionProps) {
-  // Form State
   const [name, setName] = useState("");
   const [dogDetails, setDogDetails] = useState("");
   const [email, setEmail] = useState("");
@@ -29,9 +29,13 @@ export default function ContactSection({
   const [postcode, setPostcode] = useState("");
   const [message, setMessage] = useState("");
 
-  // Dropdown State
   const [service, setService] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // 2. Measure screen and determine mobile state
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
+
   const servicesList = [
     "Founding Client Offer (25% Off)",
     "Free Trial Enquiry",
@@ -43,14 +47,12 @@ export default function ContactSection({
     "Other / General Question",
   ];
 
-  // Sync external selected service prop to local dropdown state
   useEffect(() => {
     if (selectedService) {
       setService(selectedService);
     }
   }, [selectedService]);
 
-  // The Submission Function
   const handleSubmit = async () => {
     if (!name || !email || !service) {
       alert("Please fill in your Name, Email, and select a Service.");
@@ -73,15 +75,12 @@ export default function ContactSection({
 
       const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "text/plain",
-        },
+        headers: { "Content-Type": "text/plain" },
         body: JSON.stringify(formData),
       });
 
       if (response.ok) {
         alert("Message sent successfully! I will be in touch soon.");
-        // Clear the form after a successful send
         setName("");
         setDogDetails("");
         setEmail("");
@@ -99,11 +98,14 @@ export default function ContactSection({
   };
 
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Contact | Get In Touch</Text>
+    <View style={[styles.section, isMobile && styles.sectionMobile]}>
+      <Text
+        style={[styles.sectionTitle, isMobile && styles.sectionTitleMobile]}
+      >
+        Contact | Get In Touch
+      </Text>
 
-      <View style={styles.container}>
-        {/* Left Column: Contact Info & Reassurance */}
+      <View style={[styles.container, isMobile && styles.containerMobile]}>
         <View style={styles.infoColumn}>
           <Text style={styles.header}>Ready to book your free trial?</Text>
           <Text style={styles.paragraph}>
@@ -149,7 +151,6 @@ export default function ContactSection({
           </View>
         </View>
 
-        {/* Right Column: The Form UI */}
         <View style={styles.formColumn}>
           <TextInput
             style={styles.input}
@@ -166,9 +167,14 @@ export default function ContactSection({
             onChangeText={setDogDetails}
           />
 
-          <View style={styles.rowInputs}>
+          {/* 3. Tell the row to stack on mobile! */}
+          <View style={[styles.rowInputs, isMobile && styles.rowInputsMobile]}>
             <TextInput
-              style={[styles.input, styles.halfInput]}
+              style={[
+                styles.input,
+                styles.halfInput,
+                isMobile && styles.halfInputMobile,
+              ]}
               placeholder="Email Address *"
               keyboardType="email-address"
               placeholderTextColor="#888"
@@ -176,7 +182,11 @@ export default function ContactSection({
               onChangeText={setEmail}
             />
             <TextInput
-              style={[styles.input, styles.halfInput]}
+              style={[
+                styles.input,
+                styles.halfInput,
+                isMobile && styles.halfInputMobile,
+              ]}
               placeholder="Phone Number"
               keyboardType="phone-pad"
               placeholderTextColor="#888"
@@ -193,7 +203,6 @@ export default function ContactSection({
             onChangeText={setPostcode}
           />
 
-          {/* Custom Dropdown */}
           <View style={styles.dropdownContainer}>
             <TouchableOpacity
               style={styles.dropdownHeader}
@@ -212,7 +221,7 @@ export default function ContactSection({
                 source={dropdownIcon}
                 style={[
                   styles.dropdownArrowIcon,
-                  isDropdownOpen && { transform: [{ rotate: "180deg" }] }, // Flips it upside down when open!
+                  isDropdownOpen && { transform: [{ rotate: "180deg" }] },
                 ]}
                 resizeMode="contain"
               />
@@ -344,7 +353,6 @@ const styles = StyleSheet.create({
   textArea: {
     minHeight: 120,
   },
-  /* --- DROPDOWN STYLES --- */
   dropdownContainer: {
     marginBottom: SIZES.medium,
   },
@@ -369,7 +377,7 @@ const styles = StyleSheet.create({
   dropdownArrowIcon: {
     width: 16,
     height: 16,
-    tintColor: COLOURS.primaryDark, // Optional: If your icon is black, this will tint it to match your purple branding!
+    tintColor: COLOURS.primaryDark,
   },
   dropdownList: {
     backgroundColor: "#fff",
@@ -399,5 +407,25 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: SIZES.medium,
+  },
+  /* --- NEW MOBILE STYLES --- */
+  sectionMobile: {
+    paddingHorizontal: SIZES.large,
+    paddingVertical: SIZES.xLarge,
+  },
+  sectionTitleMobile: {
+    textAlign: "center",
+  },
+  containerMobile: {
+    padding: SIZES.large,
+    gap: SIZES.large, // Reduces the massive gap between the text and the form
+  },
+  rowInputsMobile: {
+    flexDirection: "column", // Stacks Email and Phone inputs vertically!
+    gap: 0,
+    marginBottom: 0,
+  },
+  halfInputMobile: {
+    marginBottom: SIZES.medium, // Re-adds the margin that was removed for the row layout
   },
 });

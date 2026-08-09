@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+    Image,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    useWindowDimensions,
+} from "react-native";
 import { COLOURS, SIZES } from "../styles/theme";
 
 const boneIcon = require("../assets/Bone_Icon.png");
@@ -12,33 +19,44 @@ interface AnnouncementBannerProps {
 export default function AnnouncementBanner({
   onPress,
 }: AnnouncementBannerProps) {
-  // State to track if the banner has been dismissed
   const [isVisible, setIsVisible] = useState(true);
 
-  // If they closed it, don't render the banner at all
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
+
   if (!isVisible) return null;
 
   return (
     <View style={styles.bannerWrapper}>
-      {/* The Clickable Text & Bones */}
       <TouchableOpacity
-        style={styles.clickableArea}
+        style={[styles.clickableArea, isMobile && styles.clickableAreaMobile]}
         onPress={onPress}
         activeOpacity={0.8}
       >
-        <Image source={boneIcon} style={styles.boneIcon} resizeMode="contain" />
-        <Text style={styles.bannerText}>
+        {!isMobile && (
+          <Image
+            source={boneIcon}
+            style={styles.boneIcon}
+            resizeMode="contain"
+          />
+        )}
+        <Text style={[styles.bannerText, isMobile && styles.bannerTextMobile]}>
           Become a Founding Client! Enjoy 25% off your first month of care.
           Limited to our first 10 clients in Marlborough. Tap here to claim!
         </Text>
-        <Image source={boneIcon} style={styles.boneIcon} resizeMode="contain" />
+        {!isMobile && (
+          <Image
+            source={boneIcon}
+            style={styles.boneIcon}
+            resizeMode="contain"
+          />
+        )}
       </TouchableOpacity>
 
-      {/* The Close Button */}
       <TouchableOpacity
         style={styles.closeButton}
         onPress={() => setIsVisible(false)}
-        hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }} // Makes the small X easier to tap on mobile
+        hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
       >
         <Image
           source={closeIcon}
@@ -72,7 +90,6 @@ const styles = StyleSheet.create({
   boneIcon: {
     width: 20,
     height: 20,
-    // tintColor: "#fff", // Turns the dark icon white
     marginHorizontal: SIZES.small,
   },
   bannerText: {
@@ -90,6 +107,14 @@ const styles = StyleSheet.create({
   closeIcon: {
     width: 14,
     height: 14,
-    tintColor: "#fff", // Turns the dark icon white
+    tintColor: "#fff",
+  },
+  /* --- NEW MOBILE STYLES --- */
+  clickableAreaMobile: {
+    paddingHorizontal: SIZES.large,
+    paddingRight: SIZES.xxLarge, // Gives extra room for the absolute close button!
+  },
+  bannerTextMobile: {
+    fontSize: SIZES.small,
   },
 });

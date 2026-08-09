@@ -1,21 +1,24 @@
 import { useState } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  useWindowDimensions,
+} from "react-native";
 import { COLOURS, SIZES } from "../styles/theme";
 
 const plusIcon = require("../assets/Plus_Icon.png");
 const minusIcon = require("../assets/Minus_Icon.png");
 
-// We can put your actual business policies right into the data!
 const faqData = [
   {
     question: "What is your cancellation policy?",
     answer:
       "We require a minimum of 24 hours' notice for any cancellations. Services cancelled with less than 24 hours' notice will be charged at the full rate to ensure our scheduling remains reliable for all clients.",
   },
-  {
-    question: "Are you insured?",
-    answer: "We're working on it!",
-  },
+  { question: "Are you insured?", answer: "We're working on it!" },
   {
     question: "How does your pricing work?",
     answer:
@@ -39,25 +42,31 @@ const faqData = [
 ];
 
 export default function FAQSection() {
-  // State to track which FAQ item is currently open (null means all are closed)
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
+
   const toggleFAQ = (index: number) => {
-    // If clicking the one that's already open, close it. Otherwise, open the new one.
     setActiveIndex(activeIndex === index ? null : index);
   };
 
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Frequently Asked Questions</Text>
+    <View style={[styles.section, isMobile && styles.sectionMobile]}>
+      <Text
+        style={[styles.sectionTitle, isMobile && styles.sectionTitleMobile]}
+      >
+        Frequently Asked Questions
+      </Text>
 
-      <View style={styles.faqContainer}>
+      <View
+        style={[styles.faqContainer, isMobile && styles.faqContainerMobile]}
+      >
         {faqData.map((faq, index) => {
           const isOpen = activeIndex === index;
 
           return (
             <View key={index} style={styles.faqItem}>
-              {/* The Header (Clickable) */}
               <TouchableOpacity
                 style={styles.faqHeader}
                 onPress={() => toggleFAQ(index)}
@@ -66,24 +75,26 @@ export default function FAQSection() {
                 <Text
                   style={[
                     styles.questionText,
-                    isOpen && { color: COLOURS.accent }, // Highlights the text when open!
+                    isMobile && styles.questionTextMobile,
+                    isOpen && { color: COLOURS.accent },
                   ]}
                 >
                   {faq.question}
                 </Text>
                 <Image
                   source={isOpen ? minusIcon : plusIcon}
-                  style={[
-                    styles.icon,
-                    isOpen && { tintColor: COLOURS.accent }, // Highlights the icon when open!
-                  ]}
+                  style={[styles.icon, isOpen && { tintColor: COLOURS.accent }]}
                   resizeMode="contain"
                 />
               </TouchableOpacity>
 
-              {/* The Dropdown Content */}
               {isOpen && (
-                <View style={styles.answerContainer}>
+                <View
+                  style={[
+                    styles.answerContainer,
+                    isMobile && styles.answerContainerMobile,
+                  ]}
+                >
                   <Text style={styles.answerText}>{faq.answer}</Text>
                 </View>
               )}
@@ -99,7 +110,7 @@ const styles = StyleSheet.create({
   section: {
     paddingVertical: SIZES.xxLarge,
     paddingHorizontal: SIZES.xxLarge,
-    borderTopWidth: 1, // Swapped from bottom to top!
+    borderTopWidth: 1,
     borderTopColor: COLOURS.primary,
     alignItems: "center",
   },
@@ -113,7 +124,7 @@ const styles = StyleSheet.create({
   },
   faqContainer: {
     width: "100%",
-    maxWidth: 1000, // Expanded from 800 to give the text more breathing room!
+    maxWidth: 1000,
     backgroundColor: "#fff",
     borderRadius: 16,
     padding: SIZES.large,
@@ -155,5 +166,22 @@ const styles = StyleSheet.create({
     color: COLOURS.text,
     fontSize: SIZES.medium,
     lineHeight: 24,
+  },
+  /* --- NEW MOBILE STYLES --- */
+  sectionMobile: {
+    paddingHorizontal: SIZES.large,
+    paddingVertical: SIZES.xLarge,
+  },
+  sectionTitleMobile: {
+    marginBottom: SIZES.large,
+  },
+  faqContainerMobile: {
+    padding: SIZES.medium, // Shrinks the inner white box padding to maximize text space
+  },
+  questionTextMobile: {
+    fontSize: SIZES.medium, // Keeps questions from dominating the small screen
+  },
+  answerContainerMobile: {
+    paddingRight: 0, // Uses all available width for the answer paragraph
   },
 });
